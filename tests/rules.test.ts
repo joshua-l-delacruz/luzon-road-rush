@@ -51,3 +51,15 @@ it("ships project, gameplay, architecture, and security documentation", async ()
     expect((await readFile(new URL(path, import.meta.url), "utf8")).length).toBeGreaterThan(200);
   }
 });
+
+it("ships a safe-area-aware mobile playfield and touch controls", async () => {
+  const page = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../src/style.css", import.meta.url), "utf8");
+  const game = await readFile(new URL("../src/main.ts", import.meta.url), "utf8");
+  expect(page).toMatch(/class="playfield"/);
+  expect(styles).toMatch(/100dvh/);
+  expect(styles).toMatch(/safe-area-inset-bottom/);
+  expect(styles).toMatch(/orientation:\s*landscape/);
+  expect(game).toMatch(/CENTER_BOTH/);
+  expect(game).toMatch(/setPointerCapture/);
+});

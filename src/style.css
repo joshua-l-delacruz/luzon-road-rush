@@ -1,1 +1,67 @@
-:root{font-family:Inter,system-ui,sans-serif;color:#f7fbff;background:#050812;color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#13274f,#050812 55%)}button{font:inherit}.panel{width:min(720px,calc(100% - 28px));margin:auto;padding:46px 0}.eyebrow{color:#5ce1c4;font-size:.72rem;font-weight:900;letter-spacing:.16em}.panel h1{margin:.1em 0;font-size:clamp(4rem,14vw,7rem);line-height:.76;letter-spacing:-.08em;text-transform:uppercase}.panel h1 span{color:#ffcf4a}.panel>p{max-width:560px;color:#aebbd3}.maps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:30px 0 18px}.map,.primary,#change-map,.touch button,#pause{border:1px solid #31446b;border-radius:14px;background:#101a30;color:#fff;cursor:pointer}.map{padding:18px;text-align:left}.map small{display:block;margin-top:5px;color:#93a8cc}.map.active{border-color:#5ce1c4;box-shadow:0 0 0 2px #5ce1c433}.primary{padding:14px 24px;background:linear-gradient(135deg,#5ce1c4,#55a8ff);color:#06101a;font-weight:900;border:0}.rules{font-size:.82rem}.panel h2{margin-top:34px;font-size:1rem}#leaderboard{padding-left:25px;color:#aebbd3}#game-shell{width:min(480px,100%);margin:auto;position:relative;background:#000;min-height:100vh}#hud{height:66px;display:flex;align-items:center;justify-content:space-around;background:#091020;border-bottom:1px solid #263858;position:relative;z-index:3}#hud span{display:grid}#hud small{font-size:.55rem;color:#8ba4ca;letter-spacing:.08em}#pause{width:38px;height:38px}.touch{position:absolute;z-index:5;bottom:20px;left:0;right:0;display:flex;justify-content:space-between;padding:0 24px;pointer-events:none}.touch button{width:72px;height:58px;font-size:1.8rem;background:#07111dcc;pointer-events:auto;touch-action:none}dialog{border:1px solid #38547e;border-radius:20px;background:#0c1628;color:#fff;padding:30px;max-width:360px;text-align:center}dialog::backdrop{background:#02050bdd}dialog button{margin:6px;padding:12px 18px}#change-map{display:inline-block}@media(max-width:620px){.maps{grid-template-columns:1fr}.panel{padding-top:28px}.panel h1{font-size:4.5rem}}
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #f7fbff;
+  background: #050812;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; -webkit-text-size-adjust: 100%; }
+body { margin: 0; min-height: 100vh; min-height: 100dvh; background: radial-gradient(circle at 50% 0, #13274f, #050812 55%); }
+body:has(#game-shell:not([hidden]):not(.game-shell-concealed)) { overflow: hidden; overscroll-behavior: none; }
+button { font: inherit; }
+
+.panel { width: min(720px, calc(100% - 28px)); margin: auto; padding: 46px 0 calc(46px + env(safe-area-inset-bottom)); }
+.eyebrow { color: #5ce1c4; font-size: .72rem; font-weight: 900; letter-spacing: .16em; }
+.panel h1 { margin: .1em 0; font-size: clamp(4rem, 14vw, 7rem); line-height: .76; letter-spacing: -.08em; text-transform: uppercase; }
+.panel h1 span { color: #ffcf4a; }
+.panel > p { max-width: 560px; color: #aebbd3; }
+.maps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 30px 0 18px; }
+.map, .primary, #change-map, .touch button, #pause { border: 1px solid #31446b; border-radius: 14px; background: #101a30; color: #fff; cursor: pointer; }
+.map { min-height: 62px; padding: 18px; text-align: left; }
+.map small { display: block; margin-top: 5px; color: #93a8cc; }
+.map.active { border-color: #5ce1c4; box-shadow: 0 0 0 2px #5ce1c433; }
+.primary { min-height: 48px; padding: 14px 24px; border: 0; background: linear-gradient(135deg, #5ce1c4, #55a8ff); color: #06101a; font-weight: 900; }
+.rules { font-size: .82rem; }
+.panel h2 { margin-top: 34px; font-size: 1rem; }
+#leaderboard { padding-left: 25px; color: #aebbd3; }
+
+#game-shell { width: min(480px, 100%); height: 100vh; height: 100dvh; margin: auto; display: flex; flex-direction: column; position: relative; overflow: hidden; background: #000; isolation: isolate; }
+#game-shell[hidden] { display: none; }
+#hud { height: 66px; min-height: 66px; padding-top: env(safe-area-inset-top); display: flex; align-items: center; justify-content: space-around; position: relative; z-index: 3; border-bottom: 1px solid #263858; background: #091020; }
+#hud span { display: grid; min-width: 64px; }
+#hud small { color: #8ba4ca; font-size: .55rem; letter-spacing: .08em; }
+#pause { width: 44px; height: 44px; }
+
+.playfield { container-type: size; flex: 1; min-height: 0; position: relative; display: grid; place-items: center; overflow: hidden; background: #000; }
+#game { width: 100%; height: 100%; display: grid; place-items: center; }
+#game canvas { display: block; width: auto !important; height: auto !important; max-width: 100% !important; max-height: calc(100dvh - 66px) !important; }
+.touch { position: absolute; z-index: 5; inset: auto 0 max(16px, env(safe-area-inset-bottom)); bottom: calc((100cqh - min(100cqh, 152.9167cqw)) / 2 + max(16px, env(safe-area-inset-bottom))); display: flex; justify-content: space-between; padding: 0 max(18px, env(safe-area-inset-left)) 0 max(18px, env(safe-area-inset-right)); pointer-events: none; }
+.touch button { width: 76px; height: 64px; background: #07111de6; box-shadow: 0 8px 24px #0008; font-size: 1.8rem; pointer-events: auto; touch-action: none; -webkit-user-select: none; user-select: none; }
+.touch button:active { transform: scale(.96); background: #173054; }
+
+dialog { width: min(360px, calc(100% - 28px)); max-height: calc(100dvh - 28px); overflow: auto; padding: 30px max(20px, env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); border: 1px solid #38547e; border-radius: 20px; background: #0c1628; color: #fff; text-align: center; }
+dialog::backdrop { background: #02050bdd; }
+dialog button { min-height: 48px; margin: 6px; padding: 12px 18px; }
+#change-map { display: inline-block; }
+
+@media (max-width: 620px) {
+  .maps { grid-template-columns: 1fr; }
+  .panel { padding-top: max(24px, env(safe-area-inset-top)); }
+  .panel h1 { font-size: clamp(3.6rem, 20vw, 4.5rem); }
+  .panel > p { font-size: .95rem; }
+  .rules { line-height: 1.5; }
+}
+
+@media (max-height: 620px) and (orientation: landscape) {
+  #hud { height: 54px; min-height: 54px; }
+  #hud small { font-size: .48rem; }
+  #hud b { font-size: .85rem; }
+  #pause { width: 40px; height: 40px; }
+  #game canvas { max-height: calc(100dvh - 54px) !important; }
+  .touch { bottom: max(10px, env(safe-area-inset-bottom)); }
+  .touch button { width: 66px; height: 52px; }
+  .panel { padding-top: 18px; }
+  .panel h1 { font-size: 3.4rem; }
+  .maps { margin: 18px 0 12px; }
+}

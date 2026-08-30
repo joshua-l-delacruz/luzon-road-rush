@@ -233,7 +233,7 @@ function startGame() {
   if (pauseMenu.open) pauseMenu.close();
   requestAnimationFrame(() => {
     if (!game) {
-      game = new Phaser.Game({ type: Phaser.AUTO, width: 480, height: 734, parent: "game", backgroundColor: "#050812", physics: { default: "arcade", arcade: { debug: false } }, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY }, scene: RoadScene });
+      game = new Phaser.Game({ type: Phaser.AUTO, width: 480, height: 734, parent: "game", backgroundColor: "#050812", physics: { default: "arcade", arcade: { debug: false } }, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, scene: RoadScene });
       return;
     }
     game.scale.refresh();
@@ -272,6 +272,12 @@ document.querySelector("#resume")!.addEventListener("click", () => {
 });
 document.querySelector("#exit-game")!.addEventListener("click", returnToMapSelection);
 for (const [id, setter] of [["#left", (v: boolean) => touchLeft = v], ["#right", (v: boolean) => touchRight = v]] as const) {
-  const button = document.querySelector(id)!; button.addEventListener("pointerdown", () => setter(true)); button.addEventListener("pointerup", () => setter(false)); button.addEventListener("pointercancel", () => setter(false)); button.addEventListener("pointerleave", () => setter(false));
+  const button = document.querySelector<HTMLButtonElement>(id)!;
+  button.addEventListener("pointerdown", event => { event.preventDefault(); button.setPointerCapture(event.pointerId); setter(true); });
+  button.addEventListener("pointerup", event => { if (button.hasPointerCapture(event.pointerId)) button.releasePointerCapture(event.pointerId); setter(false); });
+  button.addEventListener("pointercancel", () => setter(false));
+  button.addEventListener("lostpointercapture", () => setter(false));
 }
+window.addEventListener("blur", () => { touchLeft = false; touchRight = false; });
+document.addEventListener("visibilitychange", () => { if (document.hidden) { touchLeft = false; touchRight = false; } });
 showScores();
