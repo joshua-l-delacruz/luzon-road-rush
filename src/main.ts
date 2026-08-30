@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { nextHazardLane, rankScores, speedForDistance, sweptCollision, type ScoreEntry } from "./rules";
+import { nextHazardLane, rankScores, speedForDistance, swerveChanceForSpeed, sweptCollision, type ScoreEntry } from "./rules";
 
 type MapKey = "manila" | "baguio" | "palawan";
 const MAPS: Record<MapKey, { sky: number; verge: number; accent: number; name: string; lanes: number }> = {
@@ -138,7 +138,7 @@ class RoadScene extends Phaser.Scene {
 
     this.trafficTimer += delta;
     this.hazardTimer += delta;
-    if (this.trafficTimer >= 1450) { this.trafficTimer = 0; this.spawnTraffic(pixelsPerSecond); }
+    if (this.trafficTimer >= 1450) { this.trafficTimer = 0; this.spawnTraffic(pixelsPerSecond, normalSpeed); }
     if (this.hazardTimer >= 2300) { this.hazardTimer = 0; this.spawnHazard(pixelsPerSecond); }
     for (const item of [...this.traffic.getChildren(), ...this.hazards.getChildren()] as Phaser.Physics.Arcade.Sprite[]) {
       const isTraffic = item.getData("kind") === "traffic";
@@ -183,12 +183,12 @@ class RoadScene extends Phaser.Scene {
     return lane;
   }
 
-  private spawnTraffic(speed: number) {
+  private spawnTraffic(speed: number, roadSpeed: number) {
     const lane = this.safeLane();
     const lanes = laneCenters(MAPS[selectedMap].lanes);
     const colors = ["traffic-red", "traffic-blue", "traffic-yellow"];
     const car = this.traffic.create(lanes[lane], -60, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
-    const swerves = Math.random() < .38;
+    const swerves = Math.random() < swerveChanceForSpeed(roadSpeed);
     car.setData({
       kind: "traffic", lane, counted: true,
       cruiseFactor: swerves ? Phaser.Math.FloatBetween(.98, 1.16) : Phaser.Math.FloatBetween(.72, .94),
