@@ -51,6 +51,20 @@ class RoadScene extends Phaser.Scene {
   constructor() { super("road"); }
 
   create() {
+    // Phaser reuses this Scene instance after a run. Reset all per-run state
+    // before recreating its objects so "Race again" starts a clean game.
+    this.distance = 0;
+    this.score = 0;
+    this.stripeOffset = 0;
+    this.ended = false;
+    this.slowUntil = 0;
+    this.trafficTimer = 0;
+    this.hazardTimer = 0;
+    this.physics.resume();
+    distanceNode.textContent = "0 m";
+    scoreNode.textContent = "0";
+    speedNode.textContent = speedForDistance(0).toFixed(1);
+
     const map = MAPS[selectedMap];
     this.cameras.main.setBackgroundColor(map.sky);
     this.makeTextures(map.accent);
