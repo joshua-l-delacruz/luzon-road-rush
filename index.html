@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Luzon Road Rush is an original infinite Philippine-inspired browser racing game with selectable maps and local high scores."><title>Luzon Road Rush</title><link rel="stylesheet" href="/src/style.css"></head>
+<body><main>
+  <section id="menu" class="panel"><p class="eyebrow">AN ORIGINAL INFINITE ROAD RACER</p><h1>Luzon<br><span>Road Rush</span></h1><p>Choose a route, dodge traffic and road hazards, and chase your local best score.</p><div class="maps" role="group" aria-label="Choose a map">
+    <button class="map active" data-map="manila"><b>Metro Manila Night</b><small>Neon city · four lanes</small></button>
+    <button class="map" data-map="baguio"><b>Baguio Mountain Road</b><small>Pine ridge · four lanes</small></button>
+    <button class="map" data-map="palawan"><b>Palawan Coastal Highway</b><small>Ocean sunset · four lanes</small></button>
+  </div><button id="start" class="primary">Start engine</button><p class="rules">← → or A/D to steer · Speed +0.5 every 100 m · No other difficulty scaling</p>
+  <section><h2>Local leaderboard</h2><ol id="leaderboard"></ol></section></section>
+  <section id="game-shell" hidden><div id="hud"><span><small>DISTANCE</small><b id="distance">0 m</b></span><span><small>SCORE</small><b id="score">0</b></span><span><small>SPEED</small><b id="speed">20.0</b></span><button id="pause" aria-label="Pause game">Ⅱ</button></div><div id="game"></div><div class="touch"><button id="left" aria-label="Steer left">←</button><button id="right" aria-label="Steer right">→</button></div></section>
+  <dialog id="game-over"><p class="eyebrow">RUN COMPLETE</p><h2>Road hazard!</h2><p>You travelled <b id="final-distance"></b> and scored <b id="final-score"></b>.</p><button id="again" class="primary">Race again</button><button id="change-map">Change map</button></dialog>
+</main><script type="module" src="/src/main.ts"></script></body></html>
