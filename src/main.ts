@@ -77,6 +77,16 @@ class RoadScene extends Phaser.Scene {
     this.keys = this.input.keyboard!.addKeys("A,D") as Record<string, Phaser.Input.Keyboard.Key>;
     this.physics.add.overlap(this.player, this.traffic, () => this.finish());
     this.physics.add.overlap(this.player, this.hazards, (_player, hazard) => this.hitHazard(hazard as Phaser.Physics.Arcade.Sprite));
+    this.physics.add.overlap(this.traffic, this.hazards, (traffic, hazard) => {
+      const car = traffic as Phaser.Physics.Arcade.Sprite;
+      const roadHazard = hazard as Phaser.Physics.Arcade.Sprite;
+      if (roadHazard.getData("type") !== "manhole") return;
+      const hitKey = `${roadHazard.x}:${roadHazard.y}`;
+      if (car.getData("lastManhole") === hitKey) return;
+      car.setData("lastManhole", hitKey);
+      car.setData("slowUntil", this.time.now + 1100);
+      car.setTint(0xb6c1cf);
+    });
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { touchLeft = false; touchRight = false; });
   }
 
@@ -125,13 +135,15 @@ class RoadScene extends Phaser.Scene {
     if (this.trafficTimer >= 1450) { this.trafficTimer = 0; this.spawnTraffic(pixelsPerSecond); }
     if (this.hazardTimer >= 2300) { this.hazardTimer = 0; this.spawnHazard(pixelsPerSecond); }
     for (const item of [...this.traffic.getChildren(), ...this.hazards.getChildren()] as Phaser.Physics.Arcade.Sprite[]) {
+      const isTraffic = item.getData("kind") === "traffic";
       const cruiseFactor = item.getData("cruiseFactor") || 1;
-      item.setVelocityY(pixelsPerSecond * cruiseFactor);
-      const targetLane = item.getData("targetLane");
-      if (typeof targetLane === "number") {
-        const difference = laneX[targetLane] - item.x;
-        item.setVelocityX(Math.abs(difference) < 3 ? 0 : Math.sign(difference) * 34);
-        if (Math.abs(difference) < 3) item.x = laneX[targetLane];
+      const isSlowed = isTraffic && time < (item.getData("slowUntil") || 0);
+      item.setVelocityY(pixelsPerSecond * cruiseFactor * (isSlowed ? .48 : 1));
+      if (isTraffic && !isSlowed) item.clearTint();
+      if (isTraffic && item.getData("swerves")) {
+        const phase = item.getData("swervePhase") || 0;
+        item.setVelocityX(Math.sin(time / 480 + phase) * 58);
+        item.x = Phaser.Math.Clamp(item.x, 75, 405);
       }
       if (item.y > 790) { if (item.getData("counted")) this.score += 25; item.destroy(); }
     }
@@ -151,9 +163,13 @@ class RoadScene extends Phaser.Scene {
     const lane = this.safeLane();
     const colors = ["traffic-red", "traffic-blue", "traffic-yellow"];
     const car = this.traffic.create(laneX[lane], -60, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
-    const mayChangeLane = Math.random() < .28;
-    const targetLane = mayChangeLane ? Phaser.Math.Clamp(lane + (Math.random() < .5 ? -1 : 1), 0, 3) : undefined;
-    car.setData({ lane, targetLane, counted: true, cruiseFactor: Phaser.Math.FloatBetween(.72, .94) }).setVelocityY(speed).setBodySize(34, 62);
+    car.setData({
+      kind: "traffic", lane, counted: true,
+      cruiseFactor: Phaser.Math.FloatBetween(.72, .94),
+      swerves: Math.random() < .32,
+      swervePhase: Phaser.Math.FloatBetween(0, Math.PI * 2),
+      slowUntil: 0
+    }).setVelocityY(speed).setBodySize(34, 62);
   }
 
   private spawnHazard(speed: number) {

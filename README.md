@@ -10,7 +10,7 @@ An original infinite, Philippine-inspired browser road racer built with Phaser 3
 - Steer with arrow keys, A/D, or the touch controls.
 - Dodge traffic, manholes, and potholes on an infinitely scrolling road.
 - The endless run uses gradual distance-based speed progression.
-- Traffic has varied cruising speeds and occasional lane movement, while spawn rates remain constant.
+- Traffic has varied cruising speeds, some cars weave gently left and right, and cars slow briefly after crossing a manhole. Spawn rates remain constant.
 - Scores and the top five runs are stored locally for each map.
 
 Manholes cause a short slowdown. Potholes cause a longer slowdown and larger score penalty. Traffic collisions end the run.
