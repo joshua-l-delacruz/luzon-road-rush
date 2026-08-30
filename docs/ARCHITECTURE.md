@@ -42,3 +42,5 @@ The leaderboard uses `localStorage`; there is no backend, identity layer, or tra
 ## Deployment
 
 Every push to `main` installs locked dependencies, runs tests, creates a production build, and deploys the artifact through GitHub Pages. The custom hostname is `roadrush.joshuadelacruz.solutions`.
+
+The repository's `public/CNAME` is copied into the deployed Pages artifact. GitHub Pages provisions HTTPS for the branded hostname after the custom domain and its DNS records are verified.
