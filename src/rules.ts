@@ -16,6 +16,11 @@ export function livesAfterPotholeHit(lives: number): number {
   return Math.max(0, Math.floor(lives) - 1);
 }
 
+export function formatLives(lives: number): string {
+  const remaining = Math.max(0, Math.min(STARTING_LIVES, Math.floor(lives)));
+  return Array.from({ length: STARTING_LIVES }, (_, index) => index < remaining ? "🚗" : "×").join(" ");
+}
+
 export function nextHazardLane(random = Math.random, laneCount = 4): number {
   const safeLaneCount = Math.max(1, Math.floor(laneCount));
   return Math.min(safeLaneCount - 1, Math.floor(random() * safeLaneCount));

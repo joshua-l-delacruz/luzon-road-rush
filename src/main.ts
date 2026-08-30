@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { livesAfterPotholeHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision, type ScoreEntry } from "./rules";
+import { formatLives, livesAfterPotholeHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision, type ScoreEntry } from "./rules";
 
 type MapKey = "manila" | "baguio" | "palawan";
 const MAPS: Record<MapKey, { sky: number; verge: number; accent: number; name: string; lanes: number }> = {
@@ -57,6 +57,11 @@ class RoadScene extends Phaser.Scene {
 
   constructor() { super("road"); }
 
+  private updateLivesDisplay() {
+    livesNode.textContent = formatLives(this.lives);
+    livesNode.setAttribute("aria-label", `${this.lives} ${this.lives === 1 ? "life" : "lives"} remaining`);
+  }
+
   create() {
     // Phaser reuses this Scene instance after a run. Reset all per-run state
     // before recreating its objects so "Race again" starts a clean game.
@@ -73,7 +78,7 @@ class RoadScene extends Phaser.Scene {
     distanceNode.textContent = "0 m";
     scoreNode.textContent = "0";
     speedNode.textContent = speedForDistance(0).toFixed(1);
-    livesNode.textContent = String(this.lives);
+    this.updateLivesDisplay();
 
     const map = MAPS[selectedMap];
     this.cameras.main.setBackgroundColor(map.sky);
@@ -218,7 +223,7 @@ class RoadScene extends Phaser.Scene {
     this.score = Math.max(0, this.score - (isPothole ? 75 : 35));
     if (isPothole) {
       this.lives = livesAfterPotholeHit(this.lives);
-      livesNode.textContent = String(this.lives);
+      this.updateLivesDisplay();
     }
     this.cameras.main.shake(180, .009);
     hazard.destroy();

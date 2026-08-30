@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFile } from "node:fs/promises";
-import { BASE_SPEED, livesAfterPotholeHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision } from "../src/rules";
+import { BASE_SPEED, formatLives, livesAfterPotholeHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision } from "../src/rules";
 
 describe("distance-only speed progression", () => {
   it("adds five speed units at each complete 100 m", () => {
@@ -24,6 +24,13 @@ it("removes one life per pothole and stops at zero", () => {
   expect(livesAfterPotholeHit(3)).toBe(2);
   expect(livesAfterPotholeHit(1)).toBe(0);
   expect(livesAfterPotholeHit(0)).toBe(0);
+});
+
+it("replaces a car icon with an x for every lost life", () => {
+  expect(formatLives(3)).toBe("🚗 🚗 🚗");
+  expect(formatLives(2)).toBe("🚗 🚗 ×");
+  expect(formatLives(1)).toBe("🚗 × ×");
+  expect(formatLives(0)).toBe("× × ×");
 });
 
 it("keeps randomized hazards inside the four road lanes", () => {
@@ -76,5 +83,5 @@ it("ships a safe-area-aware mobile playfield and touch controls", async () => {
   expect(styles).toMatch(/orientation:\s*landscape/);
   expect(game).toMatch(/CENTER_BOTH/);
   expect(game).toMatch(/setPointerCapture/);
-  expect(page).toMatch(/id="lives">3<\/b>/);
+  expect(page).toMatch(/id="lives"[^>]*>🚗 🚗 🚗<\/b>/);
 });
