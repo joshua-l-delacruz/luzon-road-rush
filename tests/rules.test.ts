@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFile } from "node:fs/promises";
-import { BASE_SPEED, nextHazardLane, rankScores, speedForDistance, sweptCollision } from "../src/rules";
+import { BASE_SPEED, nextHazardLane, rankScores, speedForDistance, swerveChanceForSpeed, sweptCollision } from "../src/rules";
 
 describe("distance-only speed progression", () => {
   it("adds five speed units at each complete 100 m", () => {
@@ -11,6 +11,12 @@ describe("distance-only speed progression", () => {
     expect(speedForDistance(300)).toBe(35);
     expect(speedForDistance(500)).toBe(45);
   });
+});
+
+it("makes swerving traffic more common at the 50 speed mark", () => {
+  expect(swerveChanceForSpeed(49.99)).toBe(.38);
+  expect(swerveChanceForSpeed(50)).toBe(.72);
+  expect(swerveChanceForSpeed(75)).toBe(.72);
 });
 
 it("keeps randomized hazards inside the four road lanes", () => {
