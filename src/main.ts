@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { nextHazardLane, rankScores, speedForDistance, swerveChanceForSpeed, sweptCollision, type ScoreEntry } from "./rules";
+import { livesAfterPotholeHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision, type ScoreEntry } from "./rules";
 
 type MapKey = "manila" | "baguio" | "palawan";
 const MAPS: Record<MapKey, { sky: number; verge: number; accent: number; name: string; lanes: number }> = {
@@ -24,6 +24,7 @@ const pauseMenu = document.querySelector<HTMLDialogElement>("#pause-menu")!;
 const distanceNode = document.querySelector("#distance")!;
 const scoreNode = document.querySelector("#score")!;
 const speedNode = document.querySelector("#speed")!;
+const livesNode = document.querySelector("#lives")!;
 const leaderboard = document.querySelector<HTMLOListElement>("#leaderboard")!;
 
 const scoreKey = () => `luzon-road-rush:scores:${selectedMap}`;
@@ -46,6 +47,7 @@ class RoadScene extends Phaser.Scene {
   private road!: Phaser.GameObjects.Graphics;
   private distance = 0;
   private score = 0;
+  private lives = STARTING_LIVES;
   private stripeOffset = 0;
   private ended = false;
   private slowUntil = 0;
@@ -60,6 +62,7 @@ class RoadScene extends Phaser.Scene {
     // before recreating its objects so "Race again" starts a clean game.
     this.distance = 0;
     this.score = 0;
+    this.lives = STARTING_LIVES;
     this.stripeOffset = 0;
     this.ended = false;
     this.slowUntil = 0;
@@ -70,6 +73,7 @@ class RoadScene extends Phaser.Scene {
     distanceNode.textContent = "0 m";
     scoreNode.textContent = "0";
     speedNode.textContent = speedForDistance(0).toFixed(1);
+    livesNode.textContent = String(this.lives);
 
     const map = MAPS[selectedMap];
     this.cameras.main.setBackgroundColor(map.sky);
@@ -209,9 +213,16 @@ class RoadScene extends Phaser.Scene {
   }
 
   private hitHazard(hazard: Phaser.Physics.Arcade.Sprite) {
-    this.slowUntil = this.time.now + (hazard.getData("type") === "pothole" ? 1300 : 750);
-    this.score = Math.max(0, this.score - (hazard.getData("type") === "pothole" ? 75 : 35));
-    this.cameras.main.shake(180, .009); hazard.destroy();
+    const isPothole = hazard.getData("type") === "pothole";
+    this.slowUntil = this.time.now + (isPothole ? 1300 : 750);
+    this.score = Math.max(0, this.score - (isPothole ? 75 : 35));
+    if (isPothole) {
+      this.lives = livesAfterPotholeHit(this.lives);
+      livesNode.textContent = String(this.lives);
+    }
+    this.cameras.main.shake(180, .009);
+    hazard.destroy();
+    if (isPothole && this.lives === 0) this.finish();
   }
 
   private finish() {

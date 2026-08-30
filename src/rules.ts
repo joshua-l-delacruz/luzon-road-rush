@@ -1,6 +1,7 @@
 export const BASE_SPEED = 20;
 export const SPEED_STEP = 5;
 export const STEP_DISTANCE = 100;
+export const STARTING_LIVES = 3;
 
 export function speedForDistance(distance: number): number {
   const completedSteps = Math.floor(Math.max(0, distance) / STEP_DISTANCE);
@@ -9,6 +10,10 @@ export function speedForDistance(distance: number): number {
 
 export function swerveChanceForSpeed(speed: number): number {
   return speed >= 50 ? 0.72 : 0.38;
+}
+
+export function livesAfterPotholeHit(lives: number): number {
+  return Math.max(0, Math.floor(lives) - 1);
 }
 
 export function nextHazardLane(random = Math.random, laneCount = 4): number {
