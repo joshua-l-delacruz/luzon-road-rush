@@ -42,6 +42,7 @@ it("publishes custom-domain search, social, and browser security metadata", asyn
   expect(page).toMatch(/http-equiv="Content-Security-Policy"/);
   expect(page).toMatch(/property="og:title"/);
   expect(page).toMatch(/name="twitter:card"/);
+  expect(page).toMatch(/href="https:\/\/joshuadelacruz\.solutions\/">← Main Portfolio<\/a>/);
   expect(robots).toMatch(/Sitemap: https:\/\/roadrush\.joshuadelacruz\.solutions\/sitemap\.xml/);
   expect(sitemap).toMatch(/<loc>https:\/\/roadrush\.joshuadelacruz\.solutions\/<\/loc>/);
 });
