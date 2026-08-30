@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFile } from "node:fs/promises";
 import { BASE_SPEED, nextHazardLane, rankScores, speedForDistance, sweptCollision } from "../src/rules";
 
 describe("distance-only speed progression", () => {
@@ -31,4 +32,22 @@ it("detects traffic that crosses the player between high-speed frames", () => {
 it("keeps only the five highest local scores", () => {
   const entries = [1, 9, 3, 7, 5].map(score => ({ score, distance: score, date: "today" }));
   expect(rankScores(entries, { score: 8, distance: 8, date: "today" }).map(x => x.score)).toEqual([9,8,7,5,3]);
+});
+
+it("publishes custom-domain search, social, and browser security metadata", async () => {
+  const page = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const robots = await readFile(new URL("../public/robots.txt", import.meta.url), "utf8");
+  const sitemap = await readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8");
+  expect(page).toMatch(/rel="canonical" href="https:\/\/roadrush\.joshuadelacruz\.solutions\//);
+  expect(page).toMatch(/http-equiv="Content-Security-Policy"/);
+  expect(page).toMatch(/property="og:title"/);
+  expect(page).toMatch(/name="twitter:card"/);
+  expect(robots).toMatch(/Sitemap: https:\/\/roadrush\.joshuadelacruz\.solutions\/sitemap\.xml/);
+  expect(sitemap).toMatch(/<loc>https:\/\/roadrush\.joshuadelacruz\.solutions\/<\/loc>/);
+});
+
+it("ships project, gameplay, architecture, and security documentation", async () => {
+  for (const path of ["../README.md", "../docs/GAMEPLAY.md", "../docs/ARCHITECTURE.md", "../docs/SECURITY.md", "../SECURITY.md", "../CONTRIBUTING.md"]) {
+    expect((await readFile(new URL(path, import.meta.url), "utf8")).length).toBeGreaterThan(200);
+  }
 });

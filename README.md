@@ -1,8 +1,12 @@
 # Luzon Road Rush
 
-An original infinite, Philippine-inspired browser road racer built with Phaser 3, TypeScript, and Vite.
+An original infinite, Philippine-inspired browser road racer built with Phaser 3, TypeScript, and Vite. Pick a route, read the traffic, avoid road hazards, and keep the run alive as speed rises.
 
-**[Play Luzon Road Rush](https://joshua-l-delacruz.github.io/luzon-road-rush/)**
+**[Play Luzon Road Rush](https://roadrush.joshuadelacruz.solutions/)** · **[Portfolio](https://joshuadelacruz.solutions/)**
+
+## Why this project exists
+
+Luzon Road Rush is a compact game-engine and frontend engineering project. It demonstrates deterministic gameplay rules, responsive keyboard and touch input, procedural visuals, local persistence, automated tests, secure static deployment, and an accessible interface without copying commercial game assets.
 
 ## Gameplay
 
@@ -23,6 +27,8 @@ npm install
 npm run dev
 ```
 
+Open the local URL printed by Vite. No account, API key, database, or external service is required.
+
 ## Verify
 
 ```bash
@@ -30,10 +36,30 @@ npm test
 npm run build
 ```
 
+## Documentation
+
+- [Gameplay and controls](docs/GAMEPLAY.md)
+- [Architecture and data flow](docs/ARCHITECTURE.md)
+- [Security and privacy](docs/SECURITY.md)
+- [Contributing](CONTRIBUTING.md)
+- [Vulnerability reporting](SECURITY.md)
+
+## Technology
+
+- Phaser 3 with Arcade Physics
+- TypeScript and Vite
+- Vitest rules tests
+- GitHub Actions and GitHub Pages
+- Procedural vector-style game textures
+
+## Privacy
+
+The game has no accounts, advertising, analytics, cookies, or remote leaderboard. Per-map high scores stay in the player's browser using `localStorage`.
+
 ## Original-work statement
 
 This project is an original spiritual successor to classic top-down road games. It does not use third-party game names, characters, sprites, music, tracks, or branding. Visuals are generated procedurally in the game code.
 
 ## License
 
-MIT
+[MIT](LICENSE)

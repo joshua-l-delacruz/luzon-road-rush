@@ -228,10 +228,7 @@ class RoadScene extends Phaser.Scene {
 function startGame() {
   menu.hidden = true;
   shell.hidden = false;
-  shell.style.position = "";
-  shell.style.visibility = "";
-  shell.style.pointerEvents = "";
-  shell.style.inset = "";
+  shell.classList.remove("game-shell-concealed");
   if (dialog.open) dialog.close();
   if (pauseMenu.open) pauseMenu.close();
   requestAnimationFrame(() => {
@@ -251,10 +248,7 @@ function returnToMapSelection() {
   // Do not use display:none after Phaser has created its canvas. A zero-sized
   // parent can collapse the renderer when a different map starts.
   shell.hidden = false;
-  shell.style.position = "fixed";
-  shell.style.visibility = "hidden";
-  shell.style.pointerEvents = "none";
-  shell.style.inset = "0";
+  shell.classList.add("game-shell-concealed");
   menu.hidden = false;
   showScores();
 }

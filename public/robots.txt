@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://roadrush.joshuadelacruz.solutions/sitemap.xml

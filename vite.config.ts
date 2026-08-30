@@ -1,3 +1,3 @@
 import { defineConfig } from "vite";
 
-export default defineConfig({ base: "/luzon-road-rush/" });
+export default defineConfig({ base: "./" });
