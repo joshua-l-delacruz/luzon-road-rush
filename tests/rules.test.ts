@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import { BASE_SPEED, nextHazardLane, rankScores, speedForDistance } from "../src/rules";
 
 describe("distance-only speed progression", () => {
-  it("adds exactly 0.5 at each complete 100 m", () => {
+  it("becomes 0.5 times faster at each complete 100 m", () => {
     expect(speedForDistance(0)).toBe(BASE_SPEED);
     expect(speedForDistance(99.99)).toBe(20);
-    expect(speedForDistance(100)).toBe(20.5);
-    expect(speedForDistance(500)).toBe(22.5);
+    expect(speedForDistance(100)).toBe(30);
+    expect(speedForDistance(200)).toBe(45);
+    expect(speedForDistance(500)).toBe(151.875);
   });
 });
 
