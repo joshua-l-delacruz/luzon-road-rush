@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFile } from "node:fs/promises";
-import { BASE_SPEED, formatLives, livesAfterPotholeHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision } from "../src/rules";
+import { BASE_SPEED, formatLives, livesAfterHazardHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision } from "../src/rules";
 
 describe("distance-only speed progression", () => {
   it("adds five speed units at each complete 100 m", () => {
@@ -19,11 +19,11 @@ it("makes swerving traffic more common at the 50 speed mark", () => {
   expect(swerveChanceForSpeed(75)).toBe(.72);
 });
 
-it("removes one life per pothole and stops at zero", () => {
+it("removes one life per pothole or manhole and stops at zero", () => {
   expect(STARTING_LIVES).toBe(3);
-  expect(livesAfterPotholeHit(3)).toBe(2);
-  expect(livesAfterPotholeHit(1)).toBe(0);
-  expect(livesAfterPotholeHit(0)).toBe(0);
+  expect(livesAfterHazardHit(3)).toBe(2);
+  expect(livesAfterHazardHit(1)).toBe(0);
+  expect(livesAfterHazardHit(0)).toBe(0);
 });
 
 it("replaces a car icon with an x for every lost life", () => {

@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { formatLives, livesAfterPotholeHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision, type ScoreEntry } from "./rules";
+import { formatLives, livesAfterHazardHit, nextHazardLane, rankScores, speedForDistance, STARTING_LIVES, swerveChanceForSpeed, sweptCollision, type ScoreEntry } from "./rules";
 
 type MapKey = "manila" | "baguio" | "palawan";
 const MAPS: Record<MapKey, { sky: number; verge: number; accent: number; name: string; lanes: number }> = {
@@ -221,13 +221,11 @@ class RoadScene extends Phaser.Scene {
     const isPothole = hazard.getData("type") === "pothole";
     this.slowUntil = this.time.now + (isPothole ? 1300 : 750);
     this.score = Math.max(0, this.score - (isPothole ? 75 : 35));
-    if (isPothole) {
-      this.lives = livesAfterPotholeHit(this.lives);
-      this.updateLivesDisplay();
-    }
+    this.lives = livesAfterHazardHit(this.lives);
+    this.updateLivesDisplay();
     this.cameras.main.shake(180, .009);
     hazard.destroy();
-    if (isPothole && this.lives === 0) this.finish();
+    if (this.lives === 0) this.finish();
   }
 
   private finish() {

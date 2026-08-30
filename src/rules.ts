@@ -12,7 +12,7 @@ export function swerveChanceForSpeed(speed: number): number {
   return speed >= 50 ? 0.72 : 0.38;
 }
 
-export function livesAfterPotholeHit(lives: number): number {
+export function livesAfterHazardHit(lives: number): number {
   return Math.max(0, Math.floor(lives) - 1);
 }
 
