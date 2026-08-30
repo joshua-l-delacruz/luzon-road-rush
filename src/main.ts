@@ -102,7 +102,7 @@ class RoadScene extends Phaser.Scene {
       const g = this.add.graphics(); draw(g); g.generateTexture(key, width, height); g.destroy();
     };
     texture("player", 46, 82, g => { g.fillStyle(accent).fillRoundedRect(3, 3, 40, 76, 10); g.fillStyle(0x07111f).fillRoundedRect(9, 17, 28, 25, 5); g.fillStyle(0xffffff).fillRect(7, 4, 8, 5).fillRect(31, 4, 8, 5); });
-    const trafficTexture = (key: string, color: number) => texture(key, 44, 78, g => { g.fillStyle(color).fillRoundedRect(2, 2, 40, 74, 9); g.fillStyle(0x17233c).fillRoundedRect(8, 36, 28, 24, 4); g.fillStyle(0xfff4c4).fillRect(6, 68, 8, 4).fillRect(30, 68, 8, 4); });
+    const trafficTexture = (key: string, color: number) => texture(key, 44, 78, g => { g.fillStyle(color).fillRoundedRect(2, 2, 40, 74, 9); g.fillStyle(0xfff4c4).fillRect(6, 5, 8, 4).fillRect(30, 5, 8, 4); g.fillStyle(0x17233c).fillRoundedRect(8, 17, 28, 24, 4); g.fillStyle(0xc92135).fillRect(6, 69, 8, 4).fillRect(30, 69, 8, 4); });
     trafficTexture("traffic-red", 0xff5d73);
     trafficTexture("traffic-blue", 0x4f8cff);
     trafficTexture("traffic-yellow", 0xffc857);

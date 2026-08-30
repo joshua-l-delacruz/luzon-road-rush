@@ -1,5 +1,5 @@
 export const BASE_SPEED = 20;
-export const SPEED_STEP = BASE_SPEED * 0.5;
+export const SPEED_STEP = 5;
 export const STEP_DISTANCE = 100;
 
 export function speedForDistance(distance: number): number {
