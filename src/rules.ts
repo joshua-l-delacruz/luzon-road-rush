@@ -7,6 +7,10 @@ export function speedForDistance(distance: number): number {
   return BASE_SPEED + SPEED_STEP * completedSteps;
 }
 
+export function swerveChanceForSpeed(speed: number): number {
+  return speed >= 50 ? 0.72 : 0.38;
+}
+
 export function nextHazardLane(random = Math.random, laneCount = 4): number {
   const safeLaneCount = Math.max(1, Math.floor(laneCount));
   return Math.min(safeLaneCount - 1, Math.floor(random() * safeLaneCount));
