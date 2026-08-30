@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BASE_SPEED, nextHazardLane, rankScores, speedForDistance } from "../src/rules";
+import { BASE_SPEED, nextHazardLane, rankScores, speedForDistance, sweptCollision } from "../src/rules";
 
 describe("distance-only speed progression", () => {
   it("adds five speed units at each complete 100 m", () => {
@@ -20,6 +20,12 @@ it("keeps randomized hazards inside the four road lanes", () => {
 it("keeps randomized hazards inside a three-lane map", () => {
   expect(nextHazardLane(() => 0, 3)).toBe(0);
   expect(nextHazardLane(() => 0.999, 3)).toBe(2);
+});
+
+it("detects traffic that crosses the player between high-speed frames", () => {
+  expect(sweptCollision(510, 820, 240, 240, 70, 36)).toBe(true);
+  expect(sweptCollision(510, 820, 330, 240, 70, 36)).toBe(false);
+  expect(sweptCollision(100, 300, 240, 240, 70, 36)).toBe(false);
 });
 
 it("keeps only the five highest local scores", () => {

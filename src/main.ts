@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { nextHazardLane, rankScores, speedForDistance, type ScoreEntry } from "./rules";
+import { nextHazardLane, rankScores, speedForDistance, sweptCollision, type ScoreEntry } from "./rules";
 
 type MapKey = "manila" | "baguio" | "palawan";
 const MAPS: Record<MapKey, { sky: number; verge: number; accent: number; name: string; lanes: number }> = {
@@ -142,6 +142,17 @@ class RoadScene extends Phaser.Scene {
     if (this.hazardTimer >= 2300) { this.hazardTimer = 0; this.spawnHazard(pixelsPerSecond); }
     for (const item of [...this.traffic.getChildren(), ...this.hazards.getChildren()] as Phaser.Physics.Arcade.Sprite[]) {
       const isTraffic = item.getData("kind") === "traffic";
+      const previousY = item.getData("previousY") ?? item.y;
+      const crossedPlayer = sweptCollision(previousY, item.y, item.x, this.player.x, isTraffic ? 70 : 52, isTraffic ? 36 : 40);
+      if (crossedPlayer) {
+        if (isTraffic) {
+          this.finish();
+          return;
+        }
+        this.hitHazard(item);
+        continue;
+      }
+      item.setData("previousY", item.y);
       const cruiseFactor = item.getData("cruiseFactor") || 1;
       const isSlowed = isTraffic && time < (item.getData("slowUntil") || 0);
       item.setVelocityY(pixelsPerSecond * cruiseFactor * (isSlowed ? .22 : 1));
@@ -154,7 +165,7 @@ class RoadScene extends Phaser.Scene {
       }
       if (isTraffic && !isSlowed && item.getData("swerves")) {
         const phase = item.getData("swervePhase") || 0;
-        item.setVelocityX(Math.sin(time / 480 + phase) * 58);
+        item.setVelocityX(Math.sin(time / 480 + phase) * item.getData("swerveSpeed"));
         item.x = Phaser.Math.Clamp(item.x, 75, 405);
       }
       if (item.y > 790) { if (item.getData("counted")) this.score += 25; item.destroy(); }
@@ -177,12 +188,15 @@ class RoadScene extends Phaser.Scene {
     const lanes = laneCenters(MAPS[selectedMap].lanes);
     const colors = ["traffic-red", "traffic-blue", "traffic-yellow"];
     const car = this.traffic.create(lanes[lane], -60, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
+    const swerves = Math.random() < .38;
     car.setData({
       kind: "traffic", lane, counted: true,
-      cruiseFactor: Phaser.Math.FloatBetween(.72, .94),
-      swerves: Math.random() < .32,
+      cruiseFactor: swerves ? Phaser.Math.FloatBetween(.98, 1.16) : Phaser.Math.FloatBetween(.72, .94),
+      swerves,
+      swerveSpeed: Phaser.Math.FloatBetween(115, 155),
       swervePhase: Phaser.Math.FloatBetween(0, Math.PI * 2),
-      slowUntil: 0
+      slowUntil: 0,
+      previousY: -60
     }).setDepth(2).setVelocityY(speed).setBodySize(34, 62);
   }
 
@@ -191,7 +205,7 @@ class RoadScene extends Phaser.Scene {
     const lanes = laneCenters(MAPS[selectedMap].lanes);
     const key = Math.random() < .5 ? "manhole" : "pothole";
     const hazard = this.hazards.create(lanes[lane], -30, key) as Phaser.Physics.Arcade.Sprite;
-    hazard.setData({ lane, counted: true, type: key, hazardId: ++this.hazardSequence }).setDepth(1).setVelocityY(speed).setBodySize(42, 22);
+    hazard.setData({ lane, counted: true, type: key, hazardId: ++this.hazardSequence, previousY: -30 }).setDepth(1).setVelocityY(speed).setBodySize(42, 22);
   }
 
   private hitHazard(hazard: Phaser.Physics.Arcade.Sprite) {

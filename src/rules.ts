@@ -12,6 +12,19 @@ export function nextHazardLane(random = Math.random, laneCount = 4): number {
   return Math.min(safeLaneCount - 1, Math.floor(random() * safeLaneCount));
 }
 
+export function sweptCollision(
+  previousY: number,
+  currentY: number,
+  objectX: number,
+  playerX: number,
+  verticalRadius: number,
+  horizontalRadius: number
+): boolean {
+  const top = Math.min(previousY, currentY);
+  const bottom = Math.max(previousY, currentY);
+  return top <= 665 + verticalRadius && bottom >= 665 - verticalRadius && Math.abs(objectX - playerX) <= horizontalRadius;
+}
+
 export type ScoreEntry = { score: number; distance: number; date: string };
 
 export function rankScores(entries: ScoreEntry[], latest: ScoreEntry): ScoreEntry[] {
