@@ -20,6 +20,7 @@ let touchRight = false;
 const menu = document.querySelector<HTMLElement>("#menu")!;
 const shell = document.querySelector<HTMLElement>("#game-shell")!;
 const dialog = document.querySelector<HTMLDialogElement>("#game-over")!;
+const pauseMenu = document.querySelector<HTMLDialogElement>("#pause-menu")!;
 const distanceNode = document.querySelector("#distance")!;
 const scoreNode = document.querySelector("#score")!;
 const speedNode = document.querySelector("#speed")!;
@@ -211,9 +212,37 @@ class RoadScene extends Phaser.Scene {
 }
 
 function startGame() {
-  menu.hidden = true; shell.hidden = false; dialog.close();
-  if (!game) game = new Phaser.Game({ type: Phaser.AUTO, width: 480, height: 734, parent: "game", backgroundColor: "#050812", physics: { default: "arcade", arcade: { debug: false } }, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY }, scene: RoadScene });
-  else game.scene.start("road");
+  menu.hidden = true;
+  shell.hidden = false;
+  shell.style.position = "";
+  shell.style.visibility = "";
+  shell.style.pointerEvents = "";
+  shell.style.inset = "";
+  if (dialog.open) dialog.close();
+  if (pauseMenu.open) pauseMenu.close();
+  requestAnimationFrame(() => {
+    if (!game) {
+      game = new Phaser.Game({ type: Phaser.AUTO, width: 480, height: 734, parent: "game", backgroundColor: "#050812", physics: { default: "arcade", arcade: { debug: false } }, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY }, scene: RoadScene });
+      return;
+    }
+    game.scale.refresh();
+    game.scene.start("road");
+  });
+}
+
+function returnToMapSelection() {
+  if (game) game.scene.stop("road");
+  if (dialog.open) dialog.close();
+  if (pauseMenu.open) pauseMenu.close();
+  // Do not use display:none after Phaser has created its canvas. A zero-sized
+  // parent can collapse the renderer when a different map starts.
+  shell.hidden = false;
+  shell.style.position = "fixed";
+  shell.style.visibility = "hidden";
+  shell.style.pointerEvents = "none";
+  shell.style.inset = "0";
+  menu.hidden = false;
+  showScores();
 }
 
 document.querySelectorAll<HTMLButtonElement>(".map").forEach(button => button.addEventListener("click", () => {
@@ -222,8 +251,18 @@ document.querySelectorAll<HTMLButtonElement>(".map").forEach(button => button.ad
 }));
 document.querySelector("#start")!.addEventListener("click", startGame);
 document.querySelector("#again")!.addEventListener("click", startGame);
-document.querySelector("#change-map")!.addEventListener("click", () => { dialog.close(); shell.hidden = true; menu.hidden = false; showScores(); });
-document.querySelector("#pause")!.addEventListener("click", () => { if (!game) return; const scene = game.scene.getScene("road"); scene.scene.isPaused() ? scene.scene.resume() : scene.scene.pause(); });
+document.querySelector("#change-map")!.addEventListener("click", returnToMapSelection);
+document.querySelector("#pause")!.addEventListener("click", () => {
+  if (!game) return;
+  game.scene.pause("road");
+  pauseMenu.showModal();
+});
+document.querySelector("#resume")!.addEventListener("click", () => {
+  if (!game) return;
+  game.scene.resume("road");
+  pauseMenu.close();
+});
+document.querySelector("#exit-game")!.addEventListener("click", returnToMapSelection);
 for (const [id, setter] of [["#left", (v: boolean) => touchLeft = v], ["#right", (v: boolean) => touchRight = v]] as const) {
   const button = document.querySelector(id)!; button.addEventListener("pointerdown", () => setter(true)); button.addEventListener("pointerup", () => setter(false)); button.addEventListener("pointercancel", () => setter(false)); button.addEventListener("pointerleave", () => setter(false));
 }
