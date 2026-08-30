@@ -2,12 +2,15 @@ import Phaser from "phaser";
 import { nextHazardLane, rankScores, speedForDistance, type ScoreEntry } from "./rules";
 
 type MapKey = "manila" | "baguio" | "palawan";
-const MAPS: Record<MapKey, { sky: number; verge: number; accent: number; name: string }> = {
-  manila: { sky: 0x071126, verge: 0x17223a, accent: 0x40d9ff, name: "Metro Manila Night" },
-  baguio: { sky: 0x93bfd0, verge: 0x1f5639, accent: 0xf4d35e, name: "Baguio Mountain Road" },
-  palawan: { sky: 0xf29b68, verge: 0x177c87, accent: 0xffe082, name: "Palawan Coastal Highway" }
+const MAPS: Record<MapKey, { sky: number; verge: number; accent: number; name: string; lanes: number }> = {
+  manila: { sky: 0x071126, verge: 0x17223a, accent: 0x40d9ff, name: "Metro Manila Night", lanes: 4 },
+  baguio: { sky: 0x93bfd0, verge: 0x1f5639, accent: 0xf4d35e, name: "Baguio Mountain Road", lanes: 3 },
+  palawan: { sky: 0xf29b68, verge: 0x177c87, accent: 0xffe082, name: "Palawan Coastal Highway", lanes: 3 }
 };
-const laneX = [105, 195, 285, 375];
+const ROAD_LEFT = 55;
+const ROAD_WIDTH = 370;
+const laneCenters = (count: number) => Array.from({ length: count }, (_, index) => ROAD_LEFT + ROAD_WIDTH * ((index + .5) / count));
+const laneDividers = (count: number) => Array.from({ length: count - 1 }, (_, index) => ROAD_LEFT + ROAD_WIDTH * ((index + 1) / count));
 
 let selectedMap: MapKey = "manila";
 let game: Phaser.Game | undefined;
@@ -111,7 +114,7 @@ class RoadScene extends Phaser.Scene {
     this.road.clear().fillStyle(map.verge).fillRect(0, 0, 480, 734).fillStyle(0x2d3036).fillRect(55, 0, 370, 734);
     this.road.fillStyle(0xf4f4dd).fillRect(51, 0, 5, 734).fillRect(424, 0, 5, 734);
     this.road.fillStyle(0xf7edbd);
-    for (const x of [150, 240, 330]) for (let y = -70 + this.stripeOffset; y < 760; y += 110) this.road.fillRect(x - 3, y, 6, 48);
+    for (const x of laneDividers(map.lanes)) for (let y = -70 + this.stripeOffset; y < 760; y += 110) this.road.fillRect(x - 3, y, 6, 48);
     if (selectedMap === "manila") { this.road.fillStyle(0x45d8ff, .25).fillRect(8, 0, 12, 734).fillRect(460, 0, 12, 734); }
     if (selectedMap === "baguio") for (let y = -30 + this.stripeOffset; y < 760; y += 85) this.road.fillStyle(0x133b28).fillTriangle(8, y + 40, 34, y - 5, 51, y + 40);
     if (selectedMap === "palawan") this.road.fillStyle(0x58cbd4, .45).fillRect(0, 0, 42, 734);
@@ -161,16 +164,18 @@ class RoadScene extends Phaser.Scene {
   }
 
   private safeLane(): number {
-    let lane = nextHazardLane();
+    const laneCount = MAPS[selectedMap].lanes;
+    let lane = nextHazardLane(Math.random, laneCount);
     const crowded = new Set([...this.traffic.getChildren(), ...this.hazards.getChildren()].filter((x: any) => x.y < 170).map((x: any) => x.getData("lane")));
-    for (let tries = 0; tries < 4 && crowded.has(lane); tries++) lane = (lane + 1) % 4;
+    for (let tries = 0; tries < laneCount && crowded.has(lane); tries++) lane = (lane + 1) % laneCount;
     return lane;
   }
 
   private spawnTraffic(speed: number) {
     const lane = this.safeLane();
+    const lanes = laneCenters(MAPS[selectedMap].lanes);
     const colors = ["traffic-red", "traffic-blue", "traffic-yellow"];
-    const car = this.traffic.create(laneX[lane], -60, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
+    const car = this.traffic.create(lanes[lane], -60, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
     car.setData({
       kind: "traffic", lane, counted: true,
       cruiseFactor: Phaser.Math.FloatBetween(.72, .94),
@@ -182,8 +187,9 @@ class RoadScene extends Phaser.Scene {
 
   private spawnHazard(speed: number) {
     const lane = this.safeLane();
+    const lanes = laneCenters(MAPS[selectedMap].lanes);
     const key = Math.random() < .5 ? "manhole" : "pothole";
-    const hazard = this.hazards.create(laneX[lane], -30, key) as Phaser.Physics.Arcade.Sprite;
+    const hazard = this.hazards.create(lanes[lane], -30, key) as Phaser.Physics.Arcade.Sprite;
     hazard.setData({ lane, counted: true, type: key, hazardId: ++this.hazardSequence }).setDepth(1).setVelocityY(speed).setBodySize(42, 22);
   }
 

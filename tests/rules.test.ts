@@ -15,6 +15,11 @@ it("keeps randomized hazards inside the four road lanes", () => {
   expect(nextHazardLane(() => 0.999)).toBe(3);
 });
 
+it("keeps randomized hazards inside a three-lane map", () => {
+  expect(nextHazardLane(() => 0, 3)).toBe(0);
+  expect(nextHazardLane(() => 0.999, 3)).toBe(2);
+});
+
 it("keeps only the five highest local scores", () => {
   const entries = [1, 9, 3, 7, 5].map(score => ({ score, distance: score, date: "today" }));
   expect(rankScores(entries, { score: 8, distance: 8, date: "today" }).map(x => x.score)).toEqual([9,8,7,5,3]);

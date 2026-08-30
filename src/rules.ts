@@ -6,8 +6,9 @@ export function speedForDistance(distance: number): number {
   return BASE_SPEED + Math.floor(Math.max(0, distance) / STEP_DISTANCE) * SPEED_STEP;
 }
 
-export function nextHazardLane(random = Math.random): number {
-  return Math.min(3, Math.floor(random() * 4));
+export function nextHazardLane(random = Math.random, laneCount = 4): number {
+  const safeLaneCount = Math.max(1, Math.floor(laneCount));
+  return Math.min(safeLaneCount - 1, Math.floor(random() * safeLaneCount));
 }
 
 export type ScoreEntry = { score: number; distance: number; date: string };

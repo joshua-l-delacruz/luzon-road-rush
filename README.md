@@ -6,7 +6,7 @@ An original infinite, Philippine-inspired browser road racer built with Phaser 3
 
 ## Gameplay
 
-- Choose Metro Manila Night, Baguio Mountain Road, or Palawan Coastal Highway.
+- Choose four-lane Metro Manila Night, three-lane Baguio Mountain Road, or three-lane Palawan Coastal Highway.
 - Steer with arrow keys, A/D, or the touch controls.
 - Dodge traffic, manholes, and potholes on an infinitely scrolling road.
 - The endless run uses gradual distance-based speed progression.
