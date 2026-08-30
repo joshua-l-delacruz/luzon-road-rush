@@ -12,6 +12,8 @@ body:has(#game-shell:not([hidden]):not(.game-shell-concealed)) { overflow: hidde
 button { font: inherit; }
 
 .panel { width: min(720px, calc(100% - 28px)); margin: auto; padding: 46px 0 calc(46px + env(safe-area-inset-bottom)); }
+.portfolio-return-link { display: inline-flex; align-items: center; min-height: 40px; margin-bottom: 22px; padding: 0 13px; border: 1px solid #31446b; border-radius: 12px; background: #101a30; color: #f7fbff; font-size: .78rem; font-weight: 800; text-decoration: none; }
+.portfolio-return-link:hover,.portfolio-return-link:focus-visible { border-color: #5ce1c4; color: #5ce1c4; outline: none; }
 .eyebrow { color: #5ce1c4; font-size: .72rem; font-weight: 900; letter-spacing: .16em; }
 .panel h1 { margin: .1em 0; font-size: clamp(4rem, 14vw, 7rem); line-height: .76; letter-spacing: -.08em; text-transform: uppercase; }
 .panel h1 span { color: #ffcf4a; }
