@@ -9,8 +9,8 @@ An original infinite, Philippine-inspired browser road racer built with Phaser 3
 - Choose Metro Manila Night, Baguio Mountain Road, or Palawan Coastal Highway.
 - Steer with arrow keys, A/D, or the touch controls.
 - Dodge traffic, manholes, and potholes on an infinitely scrolling road.
-- Speed increases by exactly **0.5 every complete 100 meters**.
-- Traffic and hazard spawn rates remain constant—there is no other automatic difficulty scaling.
+- The endless run uses gradual distance-based speed progression.
+- Traffic has varied cruising speeds and occasional lane movement, while spawn rates remain constant.
 - Scores and the top five runs are stored locally for each map.
 
 Manholes cause a short slowdown. Potholes cause a longer slowdown and larger score penalty. Traffic collisions end the run.

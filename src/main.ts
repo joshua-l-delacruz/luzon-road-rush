@@ -72,7 +72,10 @@ class RoadScene extends Phaser.Scene {
       const g = this.add.graphics(); draw(g); g.generateTexture(key, width, height); g.destroy();
     };
     texture("player", 46, 82, g => { g.fillStyle(accent).fillRoundedRect(3, 3, 40, 76, 10); g.fillStyle(0x07111f).fillRoundedRect(9, 17, 28, 25, 5); g.fillStyle(0xffffff).fillRect(7, 4, 8, 5).fillRect(31, 4, 8, 5); });
-    texture("traffic", 44, 78, g => { g.fillStyle(0xff5d73).fillRoundedRect(2, 2, 40, 74, 9); g.fillStyle(0x17233c).fillRoundedRect(8, 36, 28, 24, 4); });
+    const trafficTexture = (key: string, color: number) => texture(key, 44, 78, g => { g.fillStyle(color).fillRoundedRect(2, 2, 40, 74, 9); g.fillStyle(0x17233c).fillRoundedRect(8, 36, 28, 24, 4); g.fillStyle(0xfff4c4).fillRect(6, 68, 8, 4).fillRect(30, 68, 8, 4); });
+    trafficTexture("traffic-red", 0xff5d73);
+    trafficTexture("traffic-blue", 0x4f8cff);
+    trafficTexture("traffic-yellow", 0xffc857);
     texture("manhole", 52, 30, g => { g.fillStyle(0x14181e).fillEllipse(2, 2, 48, 26); g.lineStyle(3, 0x6d727c).strokeEllipse(5, 4, 42, 22); });
     texture("pothole", 58, 34, g => { g.fillStyle(0x08090b).fillEllipse(2, 3, 54, 28); g.fillStyle(0x34312e).fillCircle(17, 13, 5).fillCircle(39, 20, 6); });
   }
@@ -108,7 +111,14 @@ class RoadScene extends Phaser.Scene {
     if (this.trafficTimer >= 1450) { this.trafficTimer = 0; this.spawnTraffic(pixelsPerSecond); }
     if (this.hazardTimer >= 2300) { this.hazardTimer = 0; this.spawnHazard(pixelsPerSecond); }
     for (const item of [...this.traffic.getChildren(), ...this.hazards.getChildren()] as Phaser.Physics.Arcade.Sprite[]) {
-      item.setVelocityY(pixelsPerSecond);
+      const cruiseFactor = item.getData("cruiseFactor") || 1;
+      item.setVelocityY(pixelsPerSecond * cruiseFactor);
+      const targetLane = item.getData("targetLane");
+      if (typeof targetLane === "number") {
+        const difference = laneX[targetLane] - item.x;
+        item.setVelocityX(Math.abs(difference) < 3 ? 0 : Math.sign(difference) * 34);
+        if (Math.abs(difference) < 3) item.x = laneX[targetLane];
+      }
       if (item.y > 790) { if (item.getData("counted")) this.score += 25; item.destroy(); }
     }
     distanceNode.textContent = `${Math.floor(this.distance)} m`;
@@ -125,8 +135,11 @@ class RoadScene extends Phaser.Scene {
 
   private spawnTraffic(speed: number) {
     const lane = this.safeLane();
-    const car = this.traffic.create(laneX[lane], -60, "traffic") as Phaser.Physics.Arcade.Sprite;
-    car.setData({ lane, counted: true }).setVelocityY(speed).setBodySize(34, 62);
+    const colors = ["traffic-red", "traffic-blue", "traffic-yellow"];
+    const car = this.traffic.create(laneX[lane], -60, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
+    const mayChangeLane = Math.random() < .28;
+    const targetLane = mayChangeLane ? Phaser.Math.Clamp(lane + (Math.random() < .5 ? -1 : 1), 0, 3) : undefined;
+    car.setData({ lane, targetLane, counted: true, cruiseFactor: Phaser.Math.FloatBetween(.72, .94) }).setVelocityY(speed).setBodySize(34, 62);
   }
 
   private spawnHazard(speed: number) {
