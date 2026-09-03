@@ -166,20 +166,20 @@ class RoadScene extends Phaser.Scene {
       const isSlowed = isTraffic && time < (item.getData("slowUntil") || 0);
       item.setVelocityY(pixelsPerSecond * cruiseFactor * (isSlowed ? .22 : 1));
       if (isSlowed) {
-        item.setAngle(Math.sin(time / 75) * 5);
+        item.setAngle(180 + Math.sin(time / 75) * 5);
         item.setVelocityX(Math.sin(time / 90) * 34);
       } else if (isTraffic) {
         item.clearTint();
         item.setVelocityX(0);
-        item.setAngle(0);
+        item.setAngle(180);
       }
       if (isTraffic && !isSlowed && item.getData("swerves")) {
         const phase = item.getData("swervePhase") || 0;
         const lateralVelocity = Math.sin(time / 480 + phase) * item.getData("swerveSpeed");
         item.setVelocityX(lateralVelocity);
-        // The traffic artwork faces upward. Tilt its nose into the lateral
-        // movement without reversing the car or changing its spawn direction.
-        item.setAngle(Phaser.Math.Clamp(lateralVelocity / 12, -11, 11));
+        // Traffic moves down the screen, so rotate its upward-authored artwork
+        // to face forward and steer its nose into the lateral movement.
+        item.setAngle(180 - Phaser.Math.Clamp(lateralVelocity / 12, -11, 11));
         item.x = Phaser.Math.Clamp(item.x, 75, 405);
       }
       if (item.y > 790) { if (item.getData("counted")) this.score += 25; item.destroy(); }
