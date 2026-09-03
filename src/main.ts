@@ -164,7 +164,8 @@ class RoadScene extends Phaser.Scene {
       item.setData("previousY", item.y);
       const cruiseFactor = item.getData("cruiseFactor") || 1;
       const isSlowed = isTraffic && time < (item.getData("slowUntil") || 0);
-      item.setVelocityY(pixelsPerSecond * cruiseFactor * (isSlowed ? .22 : 1));
+      const travelDirection = item.getData("travelDirection") || 1;
+      item.setVelocityY(pixelsPerSecond * cruiseFactor * (isSlowed ? .22 : 1) * travelDirection);
       if (isSlowed) {
         item.setAngle(Math.sin(time / 75) * 5);
         item.setVelocityX(Math.sin(time / 90) * 34);
@@ -177,7 +178,8 @@ class RoadScene extends Phaser.Scene {
         item.setVelocityX(Math.sin(time / 480 + phase) * item.getData("swerveSpeed"));
         item.x = Phaser.Math.Clamp(item.x, 75, 405);
       }
-      if (item.y > 790) { if (item.getData("counted")) this.score += 25; item.destroy(); }
+      const leftPlayArea = travelDirection < 0 ? item.y < -90 : item.y > 790;
+      if (leftPlayArea) { if (item.getData("counted")) this.score += 25; item.destroy(); }
     }
     distanceNode.textContent = `${Math.floor(this.distance)} m`;
     scoreNode.textContent = Math.floor(this.score).toLocaleString();
@@ -196,17 +198,20 @@ class RoadScene extends Phaser.Scene {
     const lane = this.safeLane();
     const lanes = laneCenters(MAPS[selectedMap].lanes);
     const colors = ["traffic-red", "traffic-blue", "traffic-yellow"];
-    const car = this.traffic.create(lanes[lane], -60, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
     const swerves = Math.random() < swerveChanceForSpeed(roadSpeed);
+    const spawnY = swerves ? 900 : -60;
+    const travelDirection = swerves ? -1 : 1;
+    const car = this.traffic.create(lanes[lane], spawnY, Phaser.Utils.Array.GetRandom(colors)) as Phaser.Physics.Arcade.Sprite;
     car.setData({
       kind: "traffic", lane, counted: true,
+      travelDirection,
       cruiseFactor: swerves ? Phaser.Math.FloatBetween(.98, 1.16) : Phaser.Math.FloatBetween(.72, .94),
       swerves,
       swerveSpeed: Phaser.Math.FloatBetween(115, 155),
       swervePhase: Phaser.Math.FloatBetween(0, Math.PI * 2),
       slowUntil: 0,
-      previousY: -60
-    }).setDepth(2).setVelocityY(speed).setBodySize(34, 62);
+      previousY: spawnY
+    }).setDepth(2).setVelocityY(speed * travelDirection).setBodySize(34, 62);
   }
 
   private spawnHazard(speed: number) {
