@@ -1,12 +1,12 @@
-# Race with Death
+# Luzon Road Rush
 
 An original Philippine-inspired browser road-survival game built with Phaser 3, TypeScript, and Vite. Pick a route, avoid swerving traffic violators and road hazards, and keep the run alive as speed rises.
 
-**[Play Race with Death](https://roadrush.joshuadelacruz.solutions/)** · **[Portfolio](https://joshuadelacruz.solutions/)**
+**[Play Luzon Road Rush](https://roadrush.joshuadelacruz.solutions/)** · **[Portfolio](https://joshuadelacruz.solutions/)**
 
 ## Why this project exists
 
-Race with Death is a compact game-engine and frontend engineering project. It demonstrates deterministic gameplay rules, responsive keyboard and touch input, procedural visuals, local persistence, automated tests, secure static deployment, and an accessible interface without copying commercial game assets.
+Luzon Road Rush is a compact game-engine and frontend engineering project. It demonstrates deterministic gameplay rules, responsive keyboard and touch input, procedural visuals, local persistence, automated tests, secure static deployment, and an accessible interface without copying commercial game assets.
 
 ## Gameplay
 
